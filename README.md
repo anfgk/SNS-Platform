@@ -12,7 +12,7 @@ React로 제작한 Facebook 클론으로, 게시글과 댓글 기능을 구현�
 ## 🌎 Tech
 React, Vite, Style-components, Git
 
-## 🖥️ Soft Skill
+## 🖥️ Other Skill
 Netlify, Figma, Slack, Notion, Firebase
 
 ## 📚 주요기능

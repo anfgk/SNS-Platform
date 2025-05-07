@@ -2,19 +2,16 @@ import React, { useEffect, useReducer, useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { RouterProvider } from "react-router-dom";
 import router from "./routers/router";
-
 import {
   DataStateContext,
   DataDispatchContext,
   DarkThemeContext,
 } from "./contexts";
-
 import dataReducer from "./reducers/dataReducer.js";
 import GlobalStyles from "./styles/GlobalStyles.styles.js";
 import LoadingScreen from "./components/common/LoadingScreen.jsx";
 import { darkTheme, lightTheme } from "./styles/theme.js";
 import { canAddPoints } from "./utils/util.js";
-
 import {
   addDoc,
   arrayUnion,
@@ -27,15 +24,15 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { auth, db } from "./firebase.js";
-
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const App = () => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(false); // 다크모드 상태
   const [authLoading, setAuthLoading] = useState(true); // 인증 로딩 상태
   const [dataLoading, setDataLoading] = useState(true); // 데이터 로딩 상태
 
+  // 상태 초기값
   const initialState = {
     users: [],
     posts: [],
@@ -49,6 +46,7 @@ const App = () => {
 
   const [state, dispatch] = useReducer(dataReducer, initialState);
 
+  // 앱 초기화 함수 (인증, 데이터 로딩)
   useEffect(() => {
     const init = async () => {
       await auth.authStateReady(); // 인증 상태가 준비된 후 호출
@@ -58,33 +56,36 @@ const App = () => {
     init();
   }, []);
 
-  // 다크 모드
+  // 다크 모드 저장과 로드
   useEffect(() => {
     const savedTheme = localStorage.getItem("isDark");
     if (savedTheme) {
-      setIsDark(JSON.parse(savedTheme));
+      setIsDark(JSON.parse(savedTheme)); // 저장된 다크모드 상태 가져오기
     }
   }, []);
 
+  // 다크 모드 상태가 변경되면 로컬 스토리지에 저장
   useEffect(() => {
     localStorage.setItem("isDark", JSON.stringify(isDark));
   }, [isDark]);
 
-  // Loading
+  // 로딩 상태 (인증, 데이터)
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        await fetchUserData(user);
+        await fetchUserData(user); // 인증된 사용자 데이터 가져오기
       }
       setAuthLoading(false); // 인증 로딩 해제
     });
-    return () => unsubscribe();
+    return () => unsubscribe(); // 리스너 해제
   }, []);
 
+  // 데이터 불러오기 함수
   const fetchData = async () => {
     try {
+      // Firestore에서 데이터를 가져옴
       const usersSnapshot = await getDocs(collection(db, "users"));
       const postsSnapshot = await getDocs(collection(db, "posts"));
       const categorySnapshot = await getDocs(collection(db, "category"));
@@ -94,6 +95,7 @@ const App = () => {
         ...doc.data(),
       }));
 
+      // 사용자, 게시물, 카테고리 데이터를 상태에 저장
       const posts = postsSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -109,12 +111,13 @@ const App = () => {
         type: "INIT",
         data: { users, posts, mockData, category: categories },
       });
-      setDataLoading(false);
+      setDataLoading(false); // 데이터 로딩 상태 해제
     } catch (error) {
       console.error("데이터를 불러오지 못했습니다.", error);
     }
   };
 
+  // 인증된 사용자 데이터 불러오기
   const fetchUserData = async (user) => {
     try {
       const userDocRef = doc(db, "users", user.uid);
@@ -137,6 +140,7 @@ const App = () => {
     }
   };
 
+  // 사용자 로그인 상태에 따라 데이터 가져오기
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -150,6 +154,7 @@ const App = () => {
     return () => unsubscribe(); // 클린업 함수로 리스너 해제
   }, []);
 
+  // 포스트 생성 함수
   const onCreatePost = async (userId, userName, content, image = null) => {
     const { currentUserData } = state;
     const newPost = {
@@ -161,7 +166,7 @@ const App = () => {
       likes: 0,
       comments: [],
     };
-    // 이미지가 존재할 때만 newPost에 image 필드를 추가
+    // 이미지가 존재하면 image 필드 추가
     if (image) {
       newPost.image = [image];
     }
@@ -183,6 +188,7 @@ const App = () => {
     }
   };
 
+  // 포스트 업데이트 함수
   const onUpdatePost = async (postId, updatedData) => {
     try {
       const postRef = doc(db, "posts", postId);
@@ -192,6 +198,7 @@ const App = () => {
     }
   };
 
+  // 유저 추가 함수
   const onAddUser = async (
     userId,
     firstName,
@@ -237,7 +244,6 @@ const App = () => {
         },
       });
       // 포인트 적립 로직 추가
-      // 7초마다 포인트 지급 시도 (개별 사용자로 포인트를 관리)
       const pageName = window.location.pathname; // 현재 페이지 경로 가져오기
       const interval = setInterval(() => {
         if (canAddPoints(pageName)) {
@@ -245,12 +251,13 @@ const App = () => {
         }
       }, 7000);
 
-      // 컴포넌트가 언마운트될 때 인터벌 해제
-      return () => clearInterval(interval);
+      return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 해제
     } catch (error) {
       console.error("Firestore에 유저 추가 중 오류 발생:", error);
     }
   };
+
+  // 좋아요 토글 함수
   const onToggleLike = async (postId, isLiked) => {
     dispatch({
       type: "LIKE_POST",
@@ -326,6 +333,7 @@ const App = () => {
     }
   };
 
+  // 포스트 삭제 함수
   const onDeletePost = async (postId) => {
     try {
       await deleteDoc(doc(db, "posts", postId));
@@ -335,6 +343,7 @@ const App = () => {
     }
   };
 
+  // 로딩 중이면 로딩 화면 표시
   if (authLoading || dataLoading) {
     return <LoadingScreen />;
   }

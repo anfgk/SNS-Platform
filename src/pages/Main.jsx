@@ -49,52 +49,59 @@ const MainSection = styled.section`
 `;
 
 const Main = ({ placeholder }) => {
-  const { currentUserData } = useContext(DataStateContext);
+  const { currentUserData } = useContext(DataStateContext); // 현재 사용자 데이터 가져오기
   const [loading, setLoading] = useState(true); // 로딩 상태 관리
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태 관리
+
   useEffect(() => {
     const initialize = async () => {
       try {
         // 사용자 인증 상태 체크
         await auth.onAuthStateChanged((user) => {
           if (user) {
+            // 사용자 인증 상태가 true일 때
           }
         });
 
         // 필요한 데이터가 로드될 때까지 대기
         if (currentUserData) {
+          // 사용자 데이터가 로드되었을 때
         }
 
         // 모든 데이터가 준비되면 로딩 상태 해제
         setLoading(false);
       } catch (error) {
-        console.error("초기화 중 오류가 발생했습니다.", error);
+        console.error("초기화 중 오류가 발생했습니다.", error); // 오류 발생 시 로깅
       }
     };
 
-    initialize();
-  }, [currentUserData]);
+    initialize(); // 초기화 함수 실행
+  }, [currentUserData]); // currentUserData가 변경될 때마다 실행
 
   if (loading) {
-    return <LoadingScreen />;
+    return <LoadingScreen />; // 로딩 중이면 로딩 화면을 보여줌
   }
-
+  // 검색어가 존재하면 검색 중으로 간주
   const isSearching = searchTerm.trim().length > 0;
 
   return (
     <Wrapper>
       <HeaderTop />
+      {/* 검색어 입력 및 관련 이벤트 처리 */}
       <HeaderBottom onSearch={(term) => setSearchTerm(term)} />
       <MainSection>
+        {/* 검색어가 있으면 Mainpage 컴포넌트 렌더링 */}
         {isSearching ? (
           <Mainpage searchTerm={searchTerm} />
         ) : (
           <>
             <Mainstory />
             <PostUploadField style={{ padding: "10px 0" }}>
+              {/* 포스트 업로드 컴포넌트 */}
               <PostUpload placeholder={"오늘 어떤일이 있으셨나요?"} />
             </PostUploadField>
             <MainGroup />
+            {/* 검색어가 없을 경우 기본 Mainpage 컴포넌트 렌더링 */}ㄴ
             <Mainpage searchTerm={searchTerm} />
           </>
         )}

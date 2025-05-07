@@ -132,22 +132,24 @@ const ProductItemInfo = styled.div`
   }
 `;
 
+// 사이드바 지갑 컴포넌트
 const SideBarWallet = ({ onClick, closeModal }) => {
-  const [randomProducts, setRandomProducts] = useState([]);
-  const data = useContext(DataStateContext);
-  const { currentUserData } = useContext(DataStateContext);
-  const { mockData } = useContext(DataStateContext);
-  const liveCommerce = mockData.liveCommerce;
+  const [randomProducts, setRandomProducts] = useState([]); // 랜덤 상품 상태
+  const data = useContext(DataStateContext); // 데이터 컨텍스트
+  const { currentUserData } = useContext(DataStateContext); // 현재 사용자 데이터
+  const { mockData } = useContext(DataStateContext); // 모의 데이터
+  const liveCommerce = mockData.liveCommerce; // 라이브 커머스 상품 데이터
 
-  const points = data?.points || 0;
+  const points = data?.points || 0; // 포인트 값, 없으면 기본값 0
 
-  const closeRef = useRef(null);
+  const closeRef = useRef(null); // 클릭 외부 감지용 참조
   const handleClickOutside = (event) => {
     if (closeRef.current && !closeRef.current.contains(event.target)) {
       closeModal(); // 모달을 닫는 함수 호출
     }
   };
 
+  // 외부 클릭 이벤트 처리
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
     return () => {
@@ -155,6 +157,7 @@ const SideBarWallet = ({ onClick, closeModal }) => {
     };
   }, []);
 
+  // 라이브 커머스 상품 데이터를 랜덤으로 선택
   useEffect(() => {
     if (liveCommerce.length > 0) {
       // 모든 liveItem의 products 배열을 하나로 합침
@@ -162,8 +165,8 @@ const SideBarWallet = ({ onClick, closeModal }) => {
 
       // 랜덤하게 3개의 상품 선택
       const selectedProducts = allProducts
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3);
+        .sort(() => 0.5 - Math.random()) // 랜덤으로 섞기
+        .slice(0, 3); // 상위 3개만 선택
 
       setRandomProducts(selectedProducts); // 랜덤 상품 상태로 설정
     }
@@ -180,20 +183,22 @@ const SideBarWallet = ({ onClick, closeModal }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       ref={closeRef}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()} // 클릭 이벤트 전파 방지
     >
       <Title>
         <h3>Wallett +</h3>
         <span>
-          <IoClose onClick={onClick} />
+          <IoClose onClick={onClick} /> {/* 닫기 버튼 클릭 시 onClick 호출 */}
         </span>
       </Title>
       <Box>
         <WalletItem>
           <img src="https://www.pngplay.com/wp-content/uploads/5/Alphabet-P-PNG-Pic-Background.png" />
           <span>{currentUserData.wallet.point}p </span>
+          {/* 사용자 포인트 표시 */}
         </WalletItem>
         <WalletItem onClick={() => alert("서비스 준비중 입니다")}>
+          // 아이콘 클릭 시 서비스 준비 중 알림
           <div>+</div>
           <span>지갑 추가</span>
         </WalletItem>
@@ -203,6 +208,7 @@ const SideBarWallet = ({ onClick, closeModal }) => {
       </Title>
       <Box>
         {randomProducts.length > 0 ? (
+          // randomProducts 배열에 상품이 있을 경우, 각각의 상품을 표시
           randomProducts.map((product) => (
             <RecentProductItem key={product.id}>
               <img src={product.productImage} alt={product.name} />
@@ -222,6 +228,7 @@ const SideBarWallet = ({ onClick, closeModal }) => {
             </RecentProductItem>
           ))
         ) : (
+          // randomProducts 배열이 비어있을 경우, "상품이 없습니다" 메시지 표시
           <div style={{ color: "${(props) => props.theme.textColor}" }}>
             상품이 없습니다.
           </div>

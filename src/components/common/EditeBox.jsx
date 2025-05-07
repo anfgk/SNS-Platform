@@ -53,6 +53,7 @@ const Wrapper = styled.div`
     }
   }
 
+  // 'active' 클래스가 적용되면 드롭다운 메뉴 표시
   &.active .optionList {
     max-height: 200px;
     opacity: 1;
@@ -67,6 +68,7 @@ const Wrapper = styled.div`
 `;
 
 const EditeBox = ({ Title, postId, handleEditBtn }) => {
+  // 드롭다운 메뉴 상태 관리 (열림/닫힘)
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { onUpdatePost } = useContext(DataDispatchContext); // Context에서 함수 가져오기
@@ -79,14 +81,19 @@ const EditeBox = ({ Title, postId, handleEditBtn }) => {
       }
     };
 
+    // 컴포넌트가 마운트될 때 이벤트 리스너 추가
     document.addEventListener("mousedown", handleClickOutside);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  // 드롭다운 토글 함수
   const toggleDropdown = () => setIsOpen(!isOpen); // 드롭다운 토글
 
+  // 수정 버튼 클릭 시 처리
   const onEditClick = () => {
     if (postId) {
       console.log(`Editing postId: ${postId}`); // 디버깅 로그
@@ -111,11 +118,11 @@ const EditeBox = ({ Title, postId, handleEditBtn }) => {
   return (
     <Wrapper className={isOpen ? "active" : ""} ref={dropdownRef}>
       <button className="label" onClick={toggleDropdown}>
-        {Title || "옵션"}
+        {Title || "옵션"} {/* 버튼에 제목이 없으면 기본 "옵션" 텍스트 표시 */}
       </button>
       <ul className="optionList">
         <li className="optionItem" onClick={onEditClick}>
-          수정하기
+          수정하기 {/* 수정 옵션 */}
         </li>
       </ul>
     </Wrapper>

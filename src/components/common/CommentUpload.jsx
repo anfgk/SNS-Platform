@@ -55,26 +55,30 @@ const CommentCont = styled.div`
     }
   }
 `;
-const CommentUpload = ({ postId, onCreateComment }) => {
-  const { currentUserData } = useContext(DataStateContext);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [content, setContent] = useState("");
+// 댓글 업로드 컴포넌트
+const CommentUpload = ({ postId, onCreateComment }) => {
+  const { currentUserData } = useContext(DataStateContext); // 현재 사용자 데이터 가져오기
+
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+  const [content, setContent] = useState(""); // 댓글 내용 상태
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!content.trim()) return; // 공백 방지
+    e.preventDefault(); // 기본 폼 제출 방지
+    if (!content.trim()) return; // 공백 입력 방지
     try {
-      setIsLoading(true);
-      await onCreateComment(content); // postId는 상위 컴포넌트에서 처리됨
-      setContent(""); // 입력창 초기화
+      setIsLoading(true); // 로딩 시작
+      await onCreateComment(content); // 상위 컴포넌트에서 제공된 댓글 생성 함수 호출
+      setContent(""); // 댓글 입력란 초기화
     } catch (error) {
-      console.error("댓글 업로드 실패:", error);
+      console.error("댓글 업로드 실패:", error); // 오류 처리
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // 로딩 종료
     }
   };
   return (
     <WrapperForm onSubmit={handleSubmit}>
+      {/* 폼 제출 시 handleSubmit 호출 */}
       <CommentCont>
         <div className="commentUpLoadprofile">
           <img
@@ -84,14 +88,15 @@ const CommentUpload = ({ postId, onCreateComment }) => {
           />
           <input
             className="profileuploadText"
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => setContent(e.target.value)} // 댓글 내용 업데이트
             type="text"
             placeholder="댓글을 입력하세요"
             value={content}
             required
           />
           <button disabled={isLoading} type="submit" className="submitBtn">
-            {isLoading ? <FaSpinner /> : <BsArrowReturnLeft />}
+            {isLoading ? <FaSpinner /> : <BsArrowReturnLeft />}{" "}
+            {/* 로딩 중일 때 스피너, 아니면 제출 아이콘 */}
           </button>
         </div>
       </CommentCont>

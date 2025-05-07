@@ -1,8 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { DataDispatchContext, DataStateContext } from "../../contexts";
-
 import styled from "styled-components";
-
 import { BsArrowReturnLeft } from "react-icons/bs";
 import { FaSpinner } from "react-icons/fa";
 import { CiEdit, CiCamera } from "react-icons/ci";
@@ -10,13 +8,11 @@ import { FiX } from "react-icons/fi";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase.js";
 import defaultProfile from "/img/defaultProfile.jpg";
-
 import {
   SubDescription_16_n,
   SubDescription_14_n,
 } from "../../styles/GlobalStyles.styles.js";
 
-// Styled-components
 const WrapperForm = styled.form`
   width: 100%;
   height: fit-content;
@@ -35,7 +31,6 @@ const CommentCont = styled.div`
   align-items: center;
 
   padding: 20px 50px;
-  /* padding: 20px 10px; */
   @media (max-width: 768px) {
     width: 100%;
     padding: 0;
@@ -289,14 +284,17 @@ const InfoItem = styled.div`
 `;
 
 const PostUpload = ({ placeholder }) => {
+  // Context에서 현재 유저 정보 및 게시물 생성 함수 불러오기
   const { onCreatePost } = useContext(DataDispatchContext);
   const { currentUserData } = useContext(DataStateContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [uploadText, setUploadText] = useState("");
-  const [uploadFile, setUploadFile] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [previewImg, setPreviewImg] = useState(null);
+  // 상태 관리
+  const [isLoading, setIsLoading] = useState(false); // 게시 중 여부
+  const [uploadText, setUploadText] = useState(""); // 게시물 텍스트
+  const [uploadFile, setUploadFile] = useState(null); // 업로드할 이미지 파일
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
+  const [previewImg, setPreviewImg] = useState(null); // 이미지 미리보기 URL
 
+  // 이미지 미리보기 처리
   useEffect(() => {
     let imageUrl;
     if (uploadFile) {
@@ -310,6 +308,7 @@ const PostUpload = ({ placeholder }) => {
     };
   }, [uploadFile]);
 
+  // 게시물 제출 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!uploadFile && !uploadText) {
@@ -319,6 +318,7 @@ const PostUpload = ({ placeholder }) => {
     setIsLoading(true);
     let imageUrl = null;
 
+    // 이미지가 있는 경우 firebase 업로드
     if (uploadFile) {
       try {
         imageUrl = await uploadImage(uploadFile);
@@ -347,6 +347,7 @@ const PostUpload = ({ placeholder }) => {
     }
   };
 
+  // firebase storage에 이미지 업로드하고 URL 반환
   const uploadImage = async (file) => {
     try {
       const storageRef = ref(storage, `images/${file.name}-${Date.now()}`);
@@ -357,16 +358,19 @@ const PostUpload = ({ placeholder }) => {
     }
   };
 
+  // 모달 열기
   const openModal = () => {
     setIsModalOpen(true);
   };
 
+  // 모달 닫기 및 입력 초기화
   const closeModal = () => {
     setUploadFile(null);
     setUploadText("");
     setIsModalOpen(false);
   };
 
+  // 이미지 선택 시 상태에 저장
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -378,11 +382,14 @@ const PostUpload = ({ placeholder }) => {
     }
   };
 
+  // 게시 확인용 confirm (현재는 확인창만 표시)
   const handleCheck = (e) => {
     if (e) {
       confirm("게시물을 작성 하겠습니까?");
     }
   };
+
+  // 이미지 미리보기 취소
   const closeImgOpen = () => {
     if (previewImg) {
       URL.revokeObjectURL(previewImg);

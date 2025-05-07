@@ -117,9 +117,13 @@ const GroupTitle = styled.div`
     }
   }
 `;
-/* eslint-disable react/prop-types */
+
+// 사이드바 그룹 컴포넌트
 const SideBarGroup = ({ openGroup, closeModal }) => {
+  // 전역 컨텍스트에서 필요한 상태 가져오기
   const { currentUserData, category, mockData } = useContext(DataStateContext);
+
+  // category 배열의 첫 번째 요소에서 숫자 키만 필터링하여 카테고리 추출
   const categoryData = category[0] || {};
   const categories = Object.keys(categoryData)
     .filter((key) => !isNaN(Number(key))) // 키가 숫자인 프로퍼티만 선택합니다.
@@ -129,11 +133,13 @@ const SideBarGroup = ({ openGroup, closeModal }) => {
 
   const closeRef = useRef(null);
 
+  // 모달 외부 클릭 시 닫히도록 설정
   const handleClickOutside = (event) => {
     if (closeRef.current && !closeRef.current.contains(event.target)) {
       closeModal();
     }
   };
+
   useEffect(() => {
     // 모달이 마운트되면 클릭 이벤트 추가
     document.addEventListener("click", handleClickOutside);
@@ -144,10 +150,12 @@ const SideBarGroup = ({ openGroup, closeModal }) => {
     };
   }, []);
 
+  // 사용자 데이터 변경 시 추천 그룹 불러오기
   useEffect(() => {
     fetchRecommendedGroupsAndPages();
   }, [currentUserData]);
 
+  // Firestore에서 그룹 데이터 가져오기
   const fetchRecommendedGroupsAndPages = async () => {
     try {
       const groupsSnapshot = await getDocs(collection(db, "category"));
@@ -161,9 +169,11 @@ const SideBarGroup = ({ openGroup, closeModal }) => {
     }
   };
 
+  // 그룹 데이터 필터링 및 셔플
   const selectItems = (allItems, type) => {
     const filteredItems = allItems.filter((item) => item.type === type);
 
+    // 사용자가 선호하는 카테고리에 포함된 그룹 우선
     const userSelectedItems =
       currentUserData?.likeCategory?.length > 0
         ? filteredItems.filter((item) =>
@@ -171,6 +181,7 @@ const SideBarGroup = ({ openGroup, closeModal }) => {
           )
         : [];
 
+    // 없으면 전체에서 무작위 선택
     const itemsToShow =
       userSelectedItems.length > 0 ? userSelectedItems : filteredItems;
 
@@ -178,6 +189,8 @@ const SideBarGroup = ({ openGroup, closeModal }) => {
 
     return shuffledItems.slice(0, 3);
   };
+
+  // 랜덤 직업 텍스트 배열
   const possibleTexts = [
     "크리에이터",
     "블로거",
@@ -194,7 +207,7 @@ const SideBarGroup = ({ openGroup, closeModal }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       ref={closeRef}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()} // 내부 클릭 이벤트 전파 방지
     >
       <TopTitle>
         <h2>회원님을 위한 커뮤니티</h2>
@@ -224,7 +237,7 @@ const SideBarGroup = ({ openGroup, closeModal }) => {
                   <span>팔로우</span>
                 </GroupContents>
               );
-            })
+            }) // 백엔드 추천이 없을 때는 mock 데이터 사용
           : mockData.category.slice(6, 9).map((cat, i) => {
               const randomText =
                 possibleTexts[Math.floor(Math.random() * possibleTexts.length)];

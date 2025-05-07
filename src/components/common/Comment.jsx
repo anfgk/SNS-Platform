@@ -30,34 +30,34 @@ const LikeButton = styled.div`
 
 // 개별 댓글 컴포넌트
 const Comment = ({ comment, onDelete, currentUserId }) => {
-  const { users } = useContext(DataStateContext);
-  const state = useContext(DataStateContext);
-  const [likes, setLikes] = useState(0);
-  const [liked, setLiked] = useState(false);
+  const { users } = useContext(DataStateContext); // DataStateContext에서 사용자 정보 불러오기
+  const state = useContext(DataStateContext); // 전체 상태에 접근
+  const [likes, setLikes] = useState(0); // 좋아요 수 상태
+  const [liked, setLiked] = useState(false); // 좋아요 상태
 
   useEffect(() => {
-    const savedLikeStatus = localStorage.getItem(`liked-comment-${comment.id}`);
-    const savedLikesCount = localStorage.getItem(`likes-comment-${comment.id}`);
+    const savedLikeStatus = localStorage.getItem(`liked-comment-${comment.id}`); // 로컬스토리지에서 좋아요 상태 가져오기
+    const savedLikesCount = localStorage.getItem(`likes-comment-${comment.id}`); // 로컬스토리지에서 좋아요 수 가져오기
 
     if (savedLikeStatus === "true") {
-      setLiked(true);
+      setLiked(true); // 좋아요 상태 반영
     }
     if (savedLikesCount) {
-      setLikes(parseInt(savedLikesCount, 10));
+      setLikes(parseInt(savedLikesCount, 10)); // 좋아요 수 반영
     }
   }, [comment.id]);
 
-  const authorDats = users?.find((user) => user.userId === comment.userId);
+  const authorDats = users?.find((user) => user.userId === comment.userId); // 댓글 작성자 정보 찾기
 
   const handleToggleLike = () => {
     setLiked((prev) => {
-      const newLikedStatus = !prev;
-      localStorage.setItem(`liked-comment-${comment.id}`, newLikedStatus);
+      const newLikedStatus = !prev; // 좋아요 상태 반전
+      localStorage.setItem(`liked-comment-${comment.id}`, newLikedStatus); // 로컬스토리지에 상태 저장
 
-      const newLikesCount = newLikedStatus ? likes + 1 : likes - 1;
-      setLikes(newLikesCount);
+      const newLikesCount = newLikedStatus ? likes + 1 : likes - 1; // 좋아요 수 계산
+      setLikes(newLikesCount); // 좋아요 수 업데이트
 
-      localStorage.setItem(`likes-comment-${comment.id}`, newLikesCount);
+      localStorage.setItem(`likes-comment-${comment.id}`, newLikesCount); // 로컬스토리지에 좋아요 수 저장
 
       return newLikedStatus;
     });
@@ -133,13 +133,13 @@ const CommentSection = ({
   showCommentUpload = true,
   $isModal,
 }) => {
-  const { currentUserData } = useContext(DataStateContext);
-  const [comments, setComments] = useState([]);
+  const { currentUserData } = useContext(DataStateContext); // 현재 사용자 정보 불러오기
+  const [comments, setComments] = useState([]); // 댓글 목록 상태
 
   useEffect(() => {
     if (!post?.id) return;
 
-    const commentsRef = collection(db, "posts", post.id, "comments");
+    const commentsRef = collection(db, "posts", post.id, "comments"); // Firestore에서 댓글 컬렉션 참조
 
     const unsubscribe = onSnapshot(commentsRef, (snapshot) => {
       const fetchedComments = snapshot.docs.map((doc) => ({
@@ -151,39 +151,39 @@ const CommentSection = ({
       const sortedComments = fetchedComments.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-      setComments(sortedComments);
+      setComments(sortedComments); // 댓글 상태 업데이트
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // 컴포넌트 언마운트 시 구독 해제
   }, [post?.id]);
 
   const handleCreateComment = async (postId, content) => {
-    if (!content.trim()) return;
+    if (!content.trim()) return; // 내용이 비어있으면 생성하지 않음
     const formattedUserName = currentUserData?.userName
       ? `${currentUserData.userName.firstName}${currentUserData.userName.lastName}`
-      : "Anonymous";
+      : "Anonymous"; // 사용자 이름 포맷
     const newComment = {
       content,
       formattedUserName,
-      userId: currentUserData?.userId || "guest",
-      createdAt: new Date().toISOString(),
+      userId: currentUserData?.userId || "guest", // 사용자 ID (guest로 기본 설정)
+      createdAt: new Date().toISOString(), // 댓글 생성 시간
     };
 
     try {
-      await addDoc(collection(db, `posts/${postId}/comments`), newComment);
+      await addDoc(collection(db, `posts/${postId}/comments`), newComment); // Firestore에 댓글 추가
     } catch (error) {
-      console.error("댓글 생성 중 오류 발생:", error);
+      console.error("댓글 생성 중 오류 발생:", error); // 오류 처리
     }
   };
 
   const handleDeleteComment = async (id) => {
     try {
-      await deleteDoc(doc(db, "posts", post.id, "comments", id));
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== id)
+      await deleteDoc(doc(db, "posts", post.id, "comments", id)); // Firestore에서 댓글 삭제
+      setComments(
+        (prevComments) => prevComments.filter((comment) => comment.id !== id) // 삭제된 댓글 필터링
       );
     } catch (error) {
-      console.error("댓글 삭제 중 오류 발생:", error);
+      console.error("댓글 삭제 중 오류 발생:", error); // 오류 처리
     }
   };
 
@@ -195,14 +195,14 @@ const CommentSection = ({
             key={comment.id}
             comment={comment}
             currentUserId={currentUserData?.userId}
-            onDelete={() => handleDeleteComment(comment.id)}
+            onDelete={() => handleDeleteComment(comment.id)} // 댓글 삭제 핸들러
           />
         ))}
       </CommentList>
       {showCommentUpload && (
         <CommentUpload
           postId={post.id}
-          onCreateComment={(content) => handleCreateComment(post.id, content)}
+          onCreateComment={(content) => handleCreateComment(post.id, content)} // 댓글 업로드 핸들러
         />
       )}
     </Wrapper>

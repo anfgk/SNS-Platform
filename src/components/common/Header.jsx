@@ -262,6 +262,7 @@ const IconWrap = styled.div`
   align-items: center;
 `;
 
+// HeaderTop 컴포넌트: 페이지 상단에 고정되는 헤더, 로고와 링크 제공
 export const HeaderTop = () => {
   return (
     <Header>
@@ -272,17 +273,20 @@ export const HeaderTop = () => {
   );
 };
 
+// HeaderBottom 컴포넌트: 페이지 상단에 위치한 동적인 헤더, 검색, 프로필, 알림 기능 포함
 export const HeaderBottom = ({ onSearch }) => {
   const navigate = useNavigate();
   const data = useContext(DataStateContext);
-  const currentUser = data.currentUserData;
+  const currentUser = data.currentUserData; // 현재 사용자 데이터
   const { currentUserData } = useContext(DataStateContext);
-  const [sideMenuOpen, setSideMenuOpen] = useState(false);
-  const { isDark, setIsDark } = useContext(DarkThemeContext);
-  const [sideBarGroupOpen, setSideBarGroupOpen] = useState(false);
-  const [sideWalletOpen, setSideWalletOpen] = useState(false);
-  const [issticky, setissticky] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [sideMenuOpen, setSideMenuOpen] = useState(false); // 사이드 메뉴 열림 상태
+  const { isDark, setIsDark } = useContext(DarkThemeContext); // 다크모드 상태
+  const [sideBarGroupOpen, setSideBarGroupOpen] = useState(false); // 사이드 그룹 메뉴 열림 상태
+  const [sideWalletOpen, setSideWalletOpen] = useState(false); // 사이드 월렛 열림 상태
+  const [issticky, setissticky] = useState(false); // 스크롤에 따라 헤더 고정 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태
+
+  // 검색어가 바뀔 때마다 호출되는 함수
   const handleSearchChange = (e) => {
     const searchTerm = e.target.value;
     if (onSearch) {
@@ -291,75 +295,86 @@ export const HeaderBottom = ({ onSearch }) => {
       console.warn("onSearch 함수가 전달되지 않았습니다.");
     }
   };
+
   // 스크롤 위치 감지 및 상태 업데이트
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
-        // 스크롤 위치가 100px 이상일 때 고정
+        // 스크롤 위치가 50px 이상일 때 헤더 고정
         setissticky(true);
       } else {
-        // 스크롤 위치가 100px 이하일 때 원래 상태로
+        // 스크롤 위치가 50px 이하일 때 원래 상태로
         setissticky(false);
       }
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll); // 스크롤 이벤트 리스너 추가
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll); // 컴포넌트 언마운트 시 리스너 제거
     };
   }, []);
-  // currentUserData가 있을 때 로딩 해제
+
+  // currentUserData가 업데이트 되면 로딩 상태를 false로 설정
   useEffect(() => {
     if (currentUserData) {
-      // console.log("유저 데이터 로드 완료:", currentUserData);
       setLoading(false); // 데이터가 로드된 후 로딩 해제
     }
   }, [currentUserData]);
+
+  // 사이드 메뉴 열기/닫기
   const sideMenu = (e) => {
     e.stopPropagation();
-    setSideMenuOpen((prev) => !prev);
-    setSideBarGroupOpen(false);
-    setSideWalletOpen(false);
-  };
-  const sideGroup = (e) => {
-    e.stopPropagation();
-    setSideBarGroupOpen((prev) => !prev);
-    setSideMenuOpen(false);
-    setSideWalletOpen(false);
+    setSideMenuOpen((prev) => !prev); // 사이드 메뉴 상태 토글
+    setSideBarGroupOpen(false); // 사이드 그룹 메뉴 닫기
+    setSideWalletOpen(false); // 사이드 월렛 메뉴 닫기
   };
 
+  // 사이드 그룹 메뉴 열기/닫기
+  const sideGroup = (e) => {
+    e.stopPropagation();
+    setSideBarGroupOpen((prev) => !prev); // 사이드 그룹 메뉴 상태 토글
+    setSideMenuOpen(false); // 사이드 메뉴 닫기
+    setSideWalletOpen(false); // 사이드 월렛 메뉴 닫기
+  };
+
+  // 사이드 월렛 메뉴 열기/닫기
   const sideWallet = (e) => {
     e.stopPropagation();
-    setSideWalletOpen((prev) => !prev);
-    setSideMenuOpen(false);
-    setSideBarGroupOpen(false);
+    setSideWalletOpen((prev) => !prev); // 사이드 월렛 메뉴 상태 토글
+    setSideMenuOpen(false); // 사이드 메뉴 닫기
+    setSideBarGroupOpen(false); // 사이드 그룹 메뉴 닫기
   };
+
+  // 모달을 닫는 함수
   const closeModal = () => {
     setSideMenuOpen(false);
     setSideBarGroupOpen(false);
     setSideWalletOpen(false);
   };
+
+  // 마이페이지로 이동
   const goMypage = () => {
     const userConfirm = confirm("마이페이지로 이동하시겠습니까?");
     if (userConfirm) {
-      navigate("/mypage");
+      navigate("/mypage"); // 마이페이지로 이동
       return;
     }
   };
 
-  // LogOut
+  // 로그아웃 처리
   const onLogOut = async () => {
     const confirmation = confirm("페이스북에서 로그아웃 하시겠습니까?");
     if (confirmation) {
-      await auth.signOut();
-      navigate("/login");
+      await auth.signOut(); // Firebase 로그아웃
+      navigate("/login"); // 로그인 페이지로 이동
     }
   };
-  // console.log(currentUserData);
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // 데이터 로딩 중일 때 표시
   }
   return (
     <HeaderSticky $sticky={issticky ? "true" : null}>
+      {/* 스크롤 상태에 따른 헤더 고정 여부 */}
       <Left>
         <img
           className="mobileLogo"
@@ -372,7 +387,7 @@ export const HeaderBottom = ({ onSearch }) => {
           <input
             type="text"
             placeholder="Search Facebook"
-            onChange={handleSearchChange}
+            onChange={handleSearchChange} // 검색어 변경 시 핸들러
           />
         </div>
       </Left>
@@ -395,7 +410,7 @@ export const HeaderBottom = ({ onSearch }) => {
           <ProfileWrap>
             <div>
               <img
-                onClick={goMypage}
+                onClick={goMypage} // 클릭 시 마이페이지로 이동
                 src={
                   currentUserData.profileImage
                     ? currentUserData.profileImage
@@ -431,6 +446,7 @@ export const HeaderBottom = ({ onSearch }) => {
           </IconWrap>
         </RightSecond>
       </Right>
+      {/* 사이드 메뉴, 그룹, 월렛 관련 컴포넌트 렌더링 */}
       {sideMenuOpen && (
         <SideBarMenu
           sideMenuOpen={sideMenuOpen}

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-
 import { HeaderBottom, HeaderTop } from "../components/common/Header.jsx";
 import PostUpload from "../components/common/PostUpload.jsx";
 import PhotoVideoList from "../components/Mypage/PhotoVideoList.jsx";
@@ -86,16 +85,19 @@ const UploadInner = styled.div`
 `;
 
 const Mypage = () => {
-  const [id, setId] = useState(0);
-  const [upload, setUpload] = useState(false);
+  const [id, setId] = useState(0); // 탭 ID 상태 (0: 게시글, 1: 사진 및 동영상)
+  const [upload, setUpload] = useState(false); // 업로드 상태 관리
 
+  // 탭 클릭 시 해당 탭을 활성화하고 업로드 상태 변경
   const handleClick = (tabId) => {
-    setId(tabId);
-    setUpload((prev) => !prev);
+    setId(tabId); // 클릭한 탭의 ID 설정
+    setUpload((prev) => !prev); // 업로드 상태 토글
   };
+  // '내 지갑' 버튼 클릭 시 서비스 준비 중임을 알리는 알림
   const nope = () => {
     alert("서비스 준비중 입니다");
   };
+
   return (
     <Wrapper>
       <HeaderTop />
@@ -116,18 +118,20 @@ const Mypage = () => {
             className="underline"
             layoutId="underline"
             style={{
-              width: "33.33%",
-              left: id === 0 ? "0%" : "33%",
+              width: "33.33%", // 밑줄의 너비를 3등분으로 설정
+              left: id === 0 ? "0%" : "33%", // 현재 활성화된 탭에 따라 밑줄 위치 조정
             }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }} // 애니메이션 설정
           />
         </ContChangeBtn>
         <UploadInner style={{ display: !upload ? "block" : "none" }}>
           <PostUpload placeholder="오늘 어떤일이 있으셨나요?" />
         </UploadInner>
+        {/* 게시글 탭일 때 PostList 컴포넌트 렌더링 */}
         <div style={{ display: id === 0 ? "block" : "none" }}>
           <PostList />
         </div>
+        {/* 사진 및 동영상 탭일 때 PhotoVideoList 컴포넌트 렌더링 */}
         <div style={{ display: id === 1 ? "block" : "none" }}>
           <PhotoVideoList />
         </div>

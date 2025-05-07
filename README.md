@@ -1,70 +1,33 @@
-# Getting Started with Create React App
+# SNSflatform Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🌈 프로젝트 소개
+React로 제작한 Facebook 클론으로, 게시글과 댓글 기능을 구현한 SNS 피드형 프로젝트입니다.
 
-## Available Scripts
+## 🏡 개발 팀원
+김정하 외 5명
 
-In the project directory, you can run:
+## 🕰️ 개발 기간
+2024.09.09 ~ 2024.10.18
 
-### `npm start`
+## 🌎 Tech
+React, Vite, Style-components, Git
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🖥️ Other Skill
+Netlify, Figma, Slack, Notion, Firebase
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📚 주요기능
+- 이메일, 전화번호 또는 소셜 미디어 계정을 통해 회원가입 및 로그인 기능 제공.
+- 사용자는 자신의 프로필을 관리하고 사진, 자기소개, 친구 목록 등을 수정할 수 있음.
+- 텍스트, 이미지, 동영상 등 다양한 형식의 게시물을 작성하고 타임라인에 공유할 수 있음.
+- 게시물에 좋아요를 누르거나 댓글을 달고, 다른 사람과 게시물을 공유할 수 있음.
+- 표시되는 사진이나 동영상을 게시하여 친구들과 공유하는 스토리 기능.
+- 실시간 방송을 통해 팔로워와 소통하는 기능.
+  
+## ✨ Rule
+- 주석필수
+- 컴포넌트 구조화: 각 기능을 작은 컴포넌트로 나누어 관리.
+- 상태 관리: useState와 useEffect를 사용해 페이지 상태 관리.
+- Firebase 연결: 게시물 데이터를 실시간으로 Firebase에 저장하고 동기화.
+- 반응형 디자인: 모바일 친화적인 레이아웃 적용.
+- Git 관리: Git으로 협업, 커밋 메시지 규칙 준수.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

@@ -693,32 +693,38 @@ const ModalLive = ({ item, closeModal, postId, onCreateComment }) => {
     },
   ];
 
-  const [visibleComments, setVisibleComments] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-  const { currentUserData } = useContext(DataStateContext);
-  const { dispatch } = useContext(DataDispatchContext);
+  // 상태값들 정의
+  const [visibleComments, setVisibleComments] = useState([]); // 현재 화면에 보여줄 댓글 목록
+  const [index, setIndex] = useState(0); // 댓글 인덱스를 추적하기 위한 상태
+  const [isOpen, setIsOpen] = useState(false); // 드롭다운 열림/닫힘 상태
+  const { currentUserData } = useContext(DataStateContext); // 현재 로그인한 유저 정보
+  const { dispatch } = useContext(DataDispatchContext); // 전역 상태 업데이트 함수
 
   const [resetKey, setResetKey] = useState(null); // 카운트다운 리셋을 위한 키
   const [remainingTime, setRemainingTime] = useState(null); // 남은 시간을 저장할 상태
 
+  // 포인트 메시지: 기본값은 7초 후 적립 안내
   const [pointMessage, setPointMessage] = useState(
     "7초 후에 500 포인트가 적립됩니다."
   );
+
+  // 유저의 포인트를 Firebase에 업데이트하는 비동기 함수
   const updateUserPointsInFirebase = async (newPoints) => {
     try {
-      const userId = auth.currentUser.uid; // 현재 사용자 UID 가져오기
-      const userDocRef = doc(db, "users", userId);
+      const userId = auth.currentUser.uid; // 현재 로그인된 사용자 ID
+      const userDocRef = doc(db, "users", userId); // 해당 유저의 문서 참조
       await updateDoc(userDocRef, {
-        "wallet.point": newPoints,
+        "wallet.point": newPoints, // 포인트 필드 업데이트
       });
     } catch (error) {
       console.error("Firebase에 포인트 업데이트 중 오류 발생:", error);
     }
   };
 
+  // 라이브 스트리밍 중 포인트 적립 타이머 관리
   useEffect(() => {
     if (item && currentUserData) {
+      // localStorage에서 마지막 포인트 적립 시간 확인
       const lastPointTime = localStorage.getItem(
         `lastPointTime_${item.liveStream.id}`
       );
@@ -727,46 +733,46 @@ const ModalLive = ({ item, closeModal, postId, onCreateComment }) => {
       if (lastPointTime) {
         const lastTime = new Date(lastPointTime);
         const diff = now - lastTime;
-        const diffMinutes = Math.floor(diff / 1000 / 60);
+        const diffMinutes = Math.floor(diff / 1000 / 60); // 분 단위 차이 계산
 
         if (diffMinutes < 30) {
-          // 30분이 지나지 않았을 경우
+          // 마지막 적립 이후 30분이 지나지 않은 경우
           const remainingMinutes = 30 - diffMinutes; // 30분 기준으로 남은 시간 계산
           setPointMessage(
             `${remainingMinutes}분 후에 포인트를 다시 적립할 수 있습니다.`
           );
           setRemainingTime(0); // 카운트다운을 숨김
-          return; // 포인트 적립 프로세스를 진행하지 않음
+          return; // 포인트 적립 로직 종료
         }
       }
 
-      // 포인트 적립 가능하므로 타이머 시작
+      // 적립 가능한 경우: 7초 후에 포인트 자동 적립
       const timer = setTimeout(async () => {
         const newPoints = (currentUserData.wallet?.point || 0) + 500;
-        await updateUserPointsInFirebase(newPoints);
+        await updateUserPointsInFirebase(newPoints); // Firebase에 반영
 
         // 상태 업데이트
         dispatch({
-          type: "ADD_POINTS",
+          type: "ADD_POINTS", // Context 상태에도 500포인트 추가
           payload: 500,
         });
 
-        // 각 동영상별 포인트 적립 시간 저장
+        // 포인트 적립 시간 localStorage에 저장
         localStorage.setItem(
           `lastPointTime_${item.liveStream.id}`,
           new Date().toISOString()
         );
 
-        // 메시지 업데이트 및 알림
+        // 사용자에게 메시지 표시
         setPointMessage(
           "포인트가 적립되었습니다! 30분 후에 다시 받을 수 있습니다."
         );
         alert("500포인트가 적립되었습니다!");
 
-        // 포인트 적립 후 카운트다운을 숨김
+        // 타이머 초기화
         setRemainingTime(0);
 
-        // 30분 후에 다시 카운트다운을 시작
+        // 30분 후에 다시 7초 타이머 시작
         const resetTimer = setTimeout(
           () => {
             setRemainingTime(7000); // 7초 카운트다운 다시 시작
@@ -775,27 +781,31 @@ const ModalLive = ({ item, closeModal, postId, onCreateComment }) => {
           30 * 60 * 1000
         ); // 30분 후에 다시 카운트다운 시작
 
-        return () => clearTimeout(resetTimer);
-      }, 7000);
+        return () => clearTimeout(resetTimer); // 타이머 정리
+      }, 7000); // 7초 후 포인트 적립
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
     }
   }, [item, currentUserData]);
+
+  // 댓글을 2초마다 하나씩 보여주고, 최대 4개까지만 유지하는 효과
   useEffect(() => {
     const interval = setInterval(() => {
       setVisibleComments((prev) => {
-        const newComments = [...prev, comments[index]];
+        const newComments = [...prev, comments[index]]; // 새 댓글 추가
         if (newComments.length > 4) {
-          newComments.shift();
+          newComments.shift(); // 4개 초과 시 가장 오래된 댓글 제거
         }
         return newComments;
       });
+      // 다음 인덱스로 이동 (comments 길이만큼 반복)
       setIndex((prev) => (prev + 1) % comments.length);
-    }, 2000);
+    }, 2000); // 2초 간격
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // 언마운트 시 인터벌 정리
   }, [comments, index]);
 
+  // 드롭다운 열기/닫기 토글 함수
   const toggleDropdown = () => {
     setIsOpen((prev) => !prev);
   };

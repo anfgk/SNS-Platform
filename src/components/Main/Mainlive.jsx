@@ -10,7 +10,7 @@ import {
   SubDescription_14_n,
 } from "../../styles/GlobalStyles.styles";
 import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
-import { DataStateContext } from "../../contexts";
+import { DataStateContext } from "../../contexts"; // 데이터 context
 import ModalLive from "../Modal/ModalLive";
 
 const Wrapper = styled.div`
@@ -300,11 +300,14 @@ const PrevArrow = ({ onClick }) => {
   );
 };
 
+// 메인 컴포넌트
 const Mainlive = () => {
-  const data = useContext(DataStateContext);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [shuffledData, setShuffledData] = useState([]);
+  const data = useContext(DataStateContext); // 데이터 context에서 가져오기
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 여부
+  const [selectedItem, setSelectedItem] = useState(null); // 선택된 라이브 아이템
+  const [shuffledData, setShuffledData] = useState([]); // 섞인 데이터 배열
+
+  // 배열을 무작위로 섞는 함수
   const shuffleArray = (array) => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -314,13 +317,15 @@ const Mainlive = () => {
     return shuffled;
   };
 
-  // 컴포넌트가 마운트될 때 데이터를 랜덤하게 섞음
+  // 데이터가 있을 때 섞어서 상태에 저장
   useEffect(() => {
     if (data?.mockData?.liveCommerce) {
       const randomData = shuffleArray(data.mockData.liveCommerce);
       setShuffledData(randomData);
     }
   }, [data]);
+
+  // 슬라이더 설정
   const settings = {
     dots: false,
     infinite: true,
@@ -349,6 +354,8 @@ const Mainlive = () => {
       },
     ],
   };
+
+  // 라이브 카드 클릭 시 모달 열기
   const openLive = (item) => {
     setSelectedItem(item); // 선택된 항목 데이터를 상태에 저장
     setIsModalOpen(true); // 모달을 열기

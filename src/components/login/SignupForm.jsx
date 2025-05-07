@@ -71,6 +71,7 @@ const Erorr = styled.span`
 `;
 
 const SignupForm = ({ mobileSize, updateUserData, handleSignup }) => {
+  // React Hook Form의 기능을 사용하여 폼 상태와 유효성 검사 처리
   const {
     register,
     handleSubmit,
@@ -79,21 +80,25 @@ const SignupForm = ({ mobileSize, updateUserData, handleSignup }) => {
     getValues,
   } = useForm();
 
+  // URL 쿼리 파라미터에서 진행 상태(progress) 값을 가져옴
   const [searchParams] = useSearchParams();
   const progress = searchParams.get("progress") || "1"; // 기본값 "1"
 
+  // 폼이 유효할 때 실행되는 함수
   const onValid = async (data) => {
+    // 비밀번호 확인 일치 여부 확인
     if (data.password1 !== data.password2) {
-      setError("password1", { message: "비밀번호가 같지 않습니다." });
+      setError("password1", { message: "비밀번호가 같지 않습니다." }); // 비밀번호 불일치 시 오류 처리
       return;
     }
-    handleSignup(data);
+    handleSignup(data); // 회원가입 처리
   };
 
   return (
     <Wrapper>
       <Form onSubmit={handleSubmit(onValid)} height={630}>
-        {mobileSize ? null : <FormTitle>Facebook에 가입하기</FormTitle>}
+        {mobileSize ? null : <FormTitle>Facebook에 가입하기</FormTitle>}{" "}
+        {/* 모바일 화면에서는 제목 숨기기 */}
         <Ul>
           <li>
             <FormItemTitle>
@@ -103,7 +108,7 @@ const SignupForm = ({ mobileSize, updateUserData, handleSignup }) => {
             <InputWrapperRow>
               <InputWrap>
                 <Input
-                  {...register("firstName", { required: "성을 입력해주세요." })}
+                  {...register("firstName", { required: "성을 입력해주세요." })} // 필수 항목 유효성 검사
                   placeholder="성"
                   width={210}
                 />
@@ -189,6 +194,7 @@ const SignupForm = ({ mobileSize, updateUserData, handleSignup }) => {
         </Ul>
         {mobileSize ? (
           progress === "2" ? (
+            // 모바일 화면에서는 진행 상태가 "2"일 때만 가입 버튼을 표시
             <Input name="submit" type="submit" value="가입하기" width={430} />
           ) : null
         ) : (

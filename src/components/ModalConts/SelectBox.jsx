@@ -68,30 +68,33 @@ const Wrapper = styled.div`
 `;
 
 const SelectBox = ({ Title, desc1, desc2, desc3 }) => {
-  const [isOpen, setIsOpen] = useState(false); // 드롭다운 열림/닫힘 상태 관리
-  // const [selectedOption, setSelectedOption] = useState("최신순"); // 선택된 옵션 관리
-  const dropdownRef = useRef(null); // 드롭다운 요소 참조
+  const [isOpen, setIsOpen] = useState(false); // 드롭다운 메뉴 열림/닫힘 상태를 관리하는 state
+  // const [selectedOption, setSelectedOption] = useState("최신순"); // (사용 안 함) 선택된 옵션을 저장하는 state
+  const dropdownRef = useRef(null); // 드롭다운 DOM 요소를 참조하기 위한 ref
 
-  // 외부 클릭 감지 후 드롭다운 닫기
+  // 컴포넌트가 마운트되었을 때 외부 클릭을 감지하여 드롭다운을 닫도록 이벤트 리스너 등록
   useEffect(() => {
+    // 클릭한 요소가 드롭다운 외부일 경우
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false); // 외부 클릭 시 드롭다운 닫기
+        setIsOpen(false); // 드롭다운을 닫음
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside); // 외부 클릭 감지
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside); // 컴포넌트 언마운트 시 이벤트 제거
     };
   }, [dropdownRef]);
 
+  // 드롭다운 버튼 클릭 시 열림/닫힘 상태를 토글
   const toggleDropdown = () => {
     setIsOpen(!isOpen); // 드롭다운 열림/닫힘 상태 토글
   };
 
+  // 드롭다운 항목 클릭 시 동작 처리 (현재 선택된 옵션을 설정하고 드롭다운을 닫음)
   const handleOptionClick = (option) => {
-    setSelectedOption(option); // 선택된 옵션 업데이트
+    setSelectedOption(option); // 선택된 옵션을 상태에 저장 (주석 처리되어 있어 동작하지 않음)
     setIsOpen(false); // 옵션 선택 후 드롭다운 닫기
   };
 

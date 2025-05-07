@@ -1,8 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { DataDispatchContext } from "../../contexts";
-
 import styled from "styled-components";
-
 import { CiCamera } from "react-icons/ci";
 import { FiX } from "react-icons/fi";
 import { storage } from "../../firebase.js";
@@ -183,47 +181,52 @@ const InfoItem = styled.div`
 `;
 
 const UploadModal = ({
-  closeModal,
-  postId,
-  imageSrc,
-  contentDesc,
-  isEditing,
-  currentUserData,
+  closeModal, // 모달 닫기 함수
+  postId, // 수정 시 사용할 게시물 ID
+  imageSrc, // 수정 시 기존 이미지 URL
+  contentDesc, // 수정 시 기존 게시물 내용
+  isEditing, // 수정 모드 여부 (true: 수정, false: 새 게시물 업로드)
+  currentUserData, // 현재 사용자 데이터
 }) => {
-  const { onUpdatePost, onCreatePost } = useContext(DataDispatchContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [uploadText, setUploadText] = useState("");
-  const [uploadFile, setUploadFile] = useState(null);
-  const [previewImg, setPreviewImg] = useState(imageSrc || null);
+  const { onUpdatePost, onCreatePost } = useContext(DataDispatchContext); // 게시물 생성/수정 함수
+  const [isLoading, setIsLoading] = useState(false); // 업로드 중 로딩 상태
+  const [uploadText, setUploadText] = useState(""); // 입력된 텍스트 내용
+  const [uploadFile, setUploadFile] = useState(null); // 선택한 이미지 파일
+  const [previewImg, setPreviewImg] = useState(imageSrc || null); // 이미지 미리보기 URL
 
+  // 수정 모드일 경우 기존 내용을 텍스트 입력란에 설정
   useEffect(() => {
     if (isEditing) {
       setUploadText(contentDesc || "");
     }
   }, [isEditing, contentDesc]);
 
+  // 파일이 변경될 때마다 이미지 미리보기 URL 생성
   useEffect(() => {
     if (uploadFile) {
       const imageUrl = URL.createObjectURL(uploadFile);
       setPreviewImg(imageUrl);
 
-      // 컴포넌트 언마운트 시 URL 해제
+      // 컴포넌트 언마운트 또는 파일 변경 시 URL 메모리 해제
       return () => {
         URL.revokeObjectURL(imageUrl);
       };
     }
   }, [uploadFile]);
 
+  // 게시물 업로드 또는 수정 처리 함수
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // 텍스트와 이미지가 모두 없는 경우 경고
     if (!uploadFile && !uploadText && !contentDesc) {
       alert("내용을 입력해주세요");
       return;
     }
 
-    setIsLoading(true);
-    let imageUrl = imageSrc;
+    setIsLoading(true); // 로딩 시작
+    let imageUrl = imageSrc; // 기존 이미지 URL
 
+    // 새 이미지가 있을 경우 업로드 수행
     if (uploadFile) {
       try {
         imageUrl = await uploadImage(uploadFile);
@@ -236,6 +239,7 @@ const UploadModal = ({
 
     try {
       if (isEditing) {
+        // 게시물 수정 요청
         await onUpdatePost(postId, {
           content: uploadText || contentDesc || "",
           image: imageUrl || null,
@@ -243,6 +247,7 @@ const UploadModal = ({
         });
         alert("게시물이 수정되었습니다.");
       } else {
+        // 게시물 새로 생성
         await onCreatePost({
           userId: "testUserId", // 여기에 실제 사용자 ID를 사용
           userName: "TestUser", // 여기에 실제 사용자 이름을 사용
@@ -253,44 +258,47 @@ const UploadModal = ({
         alert("게시물이 성공적으로 업로드되었습니다.");
       }
 
-      // 폼 리셋
+      // 입력 필드 초기화
       setUploadText("");
       setUploadFile(null);
       setPreviewImg(null);
 
       // 모달 닫기
-
       closeModal();
     } catch (err) {
       console.error("게시물 처리 중 오류:", err);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // 로딩 종료
     }
   };
 
+  // 이미지 파일을 Firebase Storage에 업로드하고 URL 반환
   const uploadImage = async (file) => {
     try {
-      const storageRef = ref(storage, `images/${file.name}-${Date.now()}`);
-      await uploadBytes(storageRef, file);
-      return await getDownloadURL(storageRef);
+      const storageRef = ref(storage, `images/${file.name}-${Date.now()}`); // 파일 경로에 타임스탬프 추가
+      await uploadBytes(storageRef, file); // Firebase에 업로드
+      return await getDownloadURL(storageRef); // 업로드된 이미지의 접근 URL 반환
     } catch (err) {
       console.error("이미지 업로드 오류:", err);
       throw err;
     }
   };
 
+  // 이미지 미리보기 제거 함수
   const closeImgOpen = () => {
     if (typeof previewImg === "string" && previewImg.startsWith("blob:")) {
-      URL.revokeObjectURL(previewImg); // 미리보기 URL 해제
+      URL.revokeObjectURL(previewImg); // 메모리에서 blob URL 해제
     }
     setUploadFile(null);
     setPreviewImg(null);
   };
 
+  // 이미지 선택 시 파일 유효성 검사 및 상태 설정
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size <= 50 * 1024 * 1024) {
+        // 50MB 이하 파일만 허용
         setUploadFile(file);
       } else {
         alert("업로드할 수 있는 파일의 최대 크기는 50MB입니다");

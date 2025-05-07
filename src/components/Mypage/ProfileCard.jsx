@@ -215,44 +215,44 @@ const Button = styled.div`
 `;
 
 const ProfileCard = () => {
-  const { currentUserData } = useContext(DataStateContext);
-  const [modalOpen, setIsModalOpen] = useState(false);
+  const { currentUserData } = useContext(DataStateContext); // 현재 사용자 데이터 가져오기
+  const [modalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태 관리
 
-  const [isEditing, setEditing] = useState(false);
-  const [user, setUser] = useState(null);
-  const [profileImg, setProfileImg] = useState(defaultProfile);
-  const [desc, setDesc] = useState("A Photographer @pylpic");
+  const [isEditing, setEditing] = useState(false); // 프로필 수정 모드 상태 관리
+  const [user, setUser] = useState(null); // Firebase에서 가져온 사용자 데이터
+  const [profileImg, setProfileImg] = useState(defaultProfile); // 프로필 이미지
+  const [desc, setDesc] = useState("A Photographer @pylpic"); // 프로필 설명
 
-  const fileRef = useRef(null);
-  const auth = getAuth();
-  const storage = getStorage();
-  const firestore = getFirestore();
+  const fileRef = useRef(null); // 이미지 파일 입력을 위한 참조
+  const auth = getAuth(); // Firebase 인증 객체
+  const storage = getStorage(); // Firebase Storage 객체
+  const firestore = getFirestore(); // Firebase Firestore 객체
 
   // Firebase에서 로그인한 사용자 가져오기
   useEffect(() => {
     if (currentUserData) {
-      setDesc(currentUserData.description || "A Photographer @pylpic");
-      setProfileImg(currentUserData.profileImage || defaultProfile);
+      setDesc(currentUserData.description || "A Photographer @pylpic"); // 사용자 설명 설정
+      setProfileImg(currentUserData.profileImage || defaultProfile); // 프로필 이미지 설정
     }
-  }, [currentUserData]);
+  }, [currentUserData]); // currentUserData가 변경될 때마다 실행
 
   // Firebase에서 사용자 정보 가져오기
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUser(user);
+        setUser(user); // 로그인된 사용자 정보 설정
       } else {
-        setUser(null);
+        setUser(null); // 로그아웃 상태일 경우 사용자 정보 초기화
       }
     });
-    return () => unsubscribe();
-  }, [auth]);
+    return () => unsubscribe(); // 컴포넌트 언마운트 시 구독 해제
+  }, [auth]); // auth 객체가 변경될 때마다 실행
 
   // 이미지 파일 변경 처리
   const handleImgChange = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // 파일 선택
     if (file && user) {
-      const fileRef = ref(storage, `profileImages/${user.uid}/profileImage`);
+      const fileRef = ref(storage, `profileImages/${user.uid}/profileImage`); // Firebase Storage 경로 설정
       try {
         await uploadBytes(fileRef, file); // 파일을 Firebase Storage에 업로드
         const fileURL = await getDownloadURL(fileRef); // 업로드된 파일의 URL 가져오기
@@ -261,22 +261,24 @@ const ProfileCard = () => {
         // Firestore에 URL 저장
         const userDocRef = doc(firestore, "users", user.uid);
         await updateDoc(userDocRef, {
-          profileImage: fileURL,
+          profileImage: fileURL, // Firestore에서 프로필 이미지 업데이트
         });
       } catch (error) {
-        console.error("Error uploading image: ", error);
+        console.error("Error uploading image: ", error); // 이미지 업로드 오류 처리
       }
     }
   };
+
+  // 프로필 수정 저장 처리
   const editSave = async (e) => {
     e.preventDefault(); // 새로고침 방지
-    const confirmSave = window.confirm("프로필 수정을 저장하시겠습니까?");
+    const confirmSave = window.confirm("프로필 수정을 저장하시겠습니까?"); // 저장 확인
     if (confirmSave) {
       try {
         await onSubmit(); // Firebase에 업데이트
         setEditing(false); // 수정 모드 해제
       } catch (error) {
-        console.error("프로필 저장 중 오류:", error);
+        console.error("프로필 저장 중 오류:", error); // 오류 처리
       }
     }
   };
@@ -284,34 +286,38 @@ const ProfileCard = () => {
   // 프로필 설명 및 이미지 저장 처리
   const onSubmit = async () => {
     if (user) {
-      const userDocRef = doc(firestore, "users", user.uid);
+      const userDocRef = doc(firestore, "users", user.uid); // Firestore에서 사용자 문서 참조
       try {
         await updateDoc(userDocRef, { description: desc }); // Firestore 업데이트
-        alert("프로필이 성공적으로 업데이트되었습니다.");
+        alert("프로필이 성공적으로 업데이트되었습니다."); // 성공 메시지
       } catch (error) {
-        console.error("프로필 업데이트 오류:", error);
+        console.error("프로필 업데이트 오류:", error); // 오류 처리
         alert("프로필 업데이트 중 오류가 발생했습니다.");
       }
     }
   };
 
+  // 프로필 이미지 변경 버튼 클릭 시 파일 입력 창 열기
   const handleIconClick = () => {
-    fileRef.current.click();
+    fileRef.current.click(); // 파일 선택을 위한 input 클릭
   };
 
+  // 프로필 수정 취소 처리
   const editCencel = () => {
     const confirmCencel = window.confirm(
       "프로필 수정 작업을 취소 하시겠습니까?"
-    );
+    ); // 취소 확인
     if (confirmCencel) {
-      setEditing(false);
-      setDesc("A Photographer @pylpic");
+      setEditing(false); // 수정 모드 해제
+      setDesc("A Photographer @pylpic"); // 설명 초기화
     }
   };
 
+  // 스토리 모달 열기
   const storyModalOpen = () => {
-    setIsModalOpen(true);
+    setIsModalOpen(true); // 모달 열기
   };
+
   // 모달 닫기 핸들러
   const closeModal = () => {
     setIsModalOpen(false); // 모달을 닫기 위해 상태를 false로 설정

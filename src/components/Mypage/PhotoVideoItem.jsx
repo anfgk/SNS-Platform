@@ -84,24 +84,25 @@ const ContText = styled.div`
 `;
 
 const PhotoVideoItem = ({
-  userId,
-  imageSrc,
-  contentDesc,
-  createdAt,
-  ModalOpen,
-  ModalClose,
+  userId, // 게시물 작성자의 사용자 ID
+  imageSrc, // 게시물 이미지 URL
+  contentDesc, // 게시물 설명 텍스트
+  createdAt, // 게시물 작성일 (ISO 문자열)
+  ModalOpen, // 모달 열기 함수
+  ModalClose, // 모달 닫기 함수 (사용되지 않는다면 제거 가능)
 }) => {
-  const isLiked = false; // 초기 좋아요 여부
-  const { currentUserData } = useContext(DataStateContext);
+  const isLiked = false; // 기본적으로 좋아요는 눌리지 않은 상태
+  const { currentUserData } = useContext(DataStateContext); // 현재 로그인된 사용자 정보 가져오기
 
+  // 날짜 포맷 함수: ISO 형식의 날짜 문자열을 'YYYY.MM.DD' 형식으로 변환
   const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}.${month}.${day}`;
+    const date = new Date(isoString); // 문자열을 Date 객체로 변환
+    const year = date.getFullYear(); // 연도 추출
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 (0부터 시작하므로 +1) → 두 자리로 포맷
+    const day = String(date.getDate()).padStart(2, "0"); // 일 → 두 자리로 포맷
+    return `${year}.${month}.${day}`; // 최종 포맷된 날짜 반환
   };
-  const isAuthor = currentUserData?.uid === userId;
+  const isAuthor = currentUserData?.uid === userId; // 현재 로그인된 사용자의 UID와 게시물 작성자의 UID가 일치하는지 확인
   return (
     <Inner>
       <Contents>

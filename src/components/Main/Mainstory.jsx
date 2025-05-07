@@ -311,10 +311,11 @@ const StoryProfileImg = styled.div`
 
 const MainStory = () => {
   const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 상태
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태 관리
-  const [storys, setStorys] = useState([]);
-  const [postImage, setPostImage] = useState(null); // 모달에서 업로드된 이미지 상태
-  const { currentUserData } = useContext(DataStateContext);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 여부 상태
+  const [storys, setStorys] = useState([]); // 불러온 스토리 데이터 상태
+  const [postImage, setPostImage] = useState(null); // 이미지 업로드 임시 저장용
+  const { currentUserData } = useContext(DataStateContext); // Context에서 사용자 데이터 가져오기
+  // 데이터 없을 경우 사용할 더미 스토리
   const mockStorys = [
     {
       id: 1,
@@ -332,6 +333,8 @@ const MainStory = () => {
       id: 5,
     },
   ];
+
+  // Firestore에서 스토리 데이터를 불러오는 함수
   useEffect(() => {
     const fetchStorys = async () => {
       try {
@@ -352,18 +355,19 @@ const MainStory = () => {
     };
     fetchStorys();
   }, []);
+  // 표시할 스토리 리스트 (데이터 없으면 mock 사용)
   const displayedStorys = storys.length > 0 ? storys : mockStorys;
-  // 모달 열기 핸들러
+  // 모달 열기 함수
   const openModal = () => {
     setIsModalOpen(true); // 모달을 열기 위해 상태를 true로 설정
   };
 
-  // 모달 닫기 핸들러
+  // 모달 닫기 함수
   const closeModal = () => {
     setIsModalOpen(false); // 모달을 닫기 위해 상태를 false로 설정
   };
 
-  // 모달 제출 핸들러
+  // 모달에서 제출 시 처리 함수
   const handleModalSubmit = ({ text, image, video }) => {
     // 제출된 데이터 처리
     if (image) setPostImage(image); // 제출된 이미지를 상태에 저장

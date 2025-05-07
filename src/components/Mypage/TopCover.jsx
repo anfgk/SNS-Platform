@@ -71,61 +71,62 @@ const EditIcon = styled.div`
   }
 `;
 const TopCover = () => {
-  const [coverImg, setCoverImg] = useState(background);
-  const [user, setUser] = useState(null);
+  const [coverImg, setCoverImg] = useState(background); // 배경 이미지 초기값 설정
+  const [user, setUser] = useState(null); // Firebase에서 가져온 사용자 정보
 
-  const fileRef = useRef(null);
-  const auth = getAuth();
-  const storage = getStorage();
-  const firestore = getFirestore();
+  const fileRef = useRef(null); // 파일 입력을 위한 참조
+  const auth = getAuth(); // Firebase 인증 객체
+  const storage = getStorage(); // Firebase Storage 객체
+  const firestore = getFirestore(); // Firebase Firestore 객체
 
   // Firebase에서 로그인한 사용자 가져오기
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUser(user); // 사용자 정보 저장
-        fetchCoverImage(user); // 사용자 정보를 가져왔을 때 이미지를 불러옴
+        setUser(user); // 로그인한 사용자 정보를 상태에 저장
+        fetchCoverImage(user); // 로그인한 사용자의 coverImage를 가져옴
       } else {
-        setUser(null);
+        setUser(null); // 로그아웃 상태일 경우 사용자 정보 초기화
       }
     });
-    return () => unsubscribe(); // 컴포넌트가 언마운트될 때 구독 해제
-  }, [auth]);
+    return () => unsubscribe(); // 컴포넌트가 언마운트될 때 Firebase 구독 해제
+  }, [auth]); // auth 상태가 변경될 때마다 실행
 
   // Firestore에서 coverImage 가져오기
   const fetchCoverImage = async (user) => {
-    const userDocRef = doc(firestore, "users", user.uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const userDocRef = doc(firestore, "users", user.uid); // Firestore에서 사용자 문서 참조
+    const userDocSnap = await getDoc(userDocRef); // 문서 스냅샷 가져오기
 
     if (userDocSnap.exists()) {
-      const data = userDocSnap.data();
-      setCoverImg(data.coverImage || background);
+      const data = userDocSnap.data(); // 문서 데이터 가져오기
+      setCoverImg(data.coverImage || background); // Firestore에서 coverImage를 가져와 상태 업데이트
     }
   };
 
   // 이미지 파일 변경 처리
   const handleImgChange = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // 파일 선택
     if (file && user) {
       const fileRef = ref(storage, `covers/${user.uid}/coverImage`);
       try {
         await uploadBytes(fileRef, file); // 파일을 Firebase Storage에 업로드
         const fileURL = await getDownloadURL(fileRef); // 업로드된 파일의 URL 가져오기
-        setCoverImg(fileURL); // State 업데이트
+        setCoverImg(fileURL); // 상태에 새 이미지 URL 업데이트
 
-        // Firestore에 URL 저장
+        // Firestore에 새로운 coverImage URL 저장
         const userDocRef = doc(firestore, "users", user.uid);
         await updateDoc(userDocRef, {
-          coverImage: fileURL,
+          coverImage: fileURL, // Firestore의 coverImage 필드에 URL 저장
         });
       } catch (error) {
-        console.error("Error uploading image: ", error);
+        console.error("Error uploading image: ", error); // 업로드 중 오류 발생 시 처리
       }
     }
   };
 
+  // 아이콘 클릭 시 파일 선택 창 열기
   const handleIconClick = () => {
-    fileRef.current.click();
+    fileRef.current.click(); // 파일 입력을 위한 input 클릭
   };
 
   return (

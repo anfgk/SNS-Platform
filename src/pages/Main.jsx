@@ -101,7 +101,7 @@ const Main = ({ placeholder }) => {
               <PostUpload placeholder={"오늘 어떤일이 있으셨나요?"} />
             </PostUploadField>
             <MainGroup />
-            {/* 검색어가 없을 경우 기본 Mainpage 컴포넌트 렌더링 */}ㄴ
+            {/* 검색어가 없을 경우 기본 Mainpage 컴포넌트 렌더링 */}
             <Mainpage searchTerm={searchTerm} />
           </>
         )}

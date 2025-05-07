@@ -18,9 +18,6 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   gap: 10px;
-  /* padding: 15px;
-  background: var(--color-white);
-  border-top: 1px solid var(--color-light-gray-01); */
   button {
     width: 360px;
     max-width: 360px;
@@ -40,13 +37,16 @@ const Wrapper = styled.div`
   }
 `;
 
+// 모바일에서 사용되는 버튼 컴포넌트
 const MobileButtonWrapper = ({ skipBtn }) => {
   const navigate = useNavigate();
+
+  // "다음" 버튼 클릭 시 회원가입 진행 단계 이동 (progress=2)
   const handleSignupNextStep = () => {
     navigate({
       pathname: "/signup",
       search: `?${createSearchParams({
-        progress: 2,
+        progress: 2, // 쿼리 파라미터로 progress 전달
       })}`,
     });
   };

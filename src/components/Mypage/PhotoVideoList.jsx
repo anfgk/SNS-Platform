@@ -24,40 +24,43 @@ const Wrapper = styled.section`
 `;
 
 const PhotoVideoList = () => {
-  const [userPosts, setUserPosts] = useState([]);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const { currentUserData } = useContext(DataStateContext);
+  const [userPosts, setUserPosts] = useState([]); // 사용자의 게시물 목록을 저장할 상태
+  const [selectedPost, setSelectedPost] = useState(null); // 선택된 게시물을 저장할 상태
+  const { currentUserData } = useContext(DataStateContext); // 현재 로그인한 사용자의 데이터를 가져오기 위해 context 사용
 
   useEffect(() => {
+    // 게시물을 가져오는 함수
     const fetchPosts = async () => {
       try {
-        if (!currentUserData) return; // currentUserData가 없는 경우 실행하지 않음
+        if (!currentUserData) return; // currentUserData가 없는 경우에는 함수 실행을 중단
         const postsQuery = query(
-          collection(db, "posts"),
-          orderBy("createdAt", "desc")
+          collection(db, "posts"), // Firestore에서 'posts' 컬렉션을 조회
+          orderBy("createdAt", "desc") // 게시물의 생성일 기준으로 내림차순 정렬
         );
-        const querySnapshot = await getDocs(postsQuery);
+        const querySnapshot = await getDocs(postsQuery); // 쿼리 실행
         const postData = querySnapshot.docs
           .map((doc) => ({
             id: doc.id,
             userId: doc.data().userId,
-            ...doc.data(),
+            ...doc.data(), // 게시물 데이터 확장 (id, userId 포함)
           }))
           .filter((post) => post.userId === currentUserData.userId); // 현재 사용자 게시물만 필터링
-        setUserPosts(postData);
+        setUserPosts(postData); // 상태에 필터링된 게시물 목록 저장
       } catch (err) {
-        console.error("Post 데이터를 가져오는 중 오류 발생:", err);
+        console.error("Post 데이터를 가져오는 중 오류 발생:", err); // 데이터 가져오기 중 에러 발생 시 처리
       }
     };
-    fetchPosts();
-  }, [currentUserData]);
+    fetchPosts(); // 게시물 데이터 fetch 실행
+  }, [currentUserData]); // currentUserData가 변경될 때마다 fetchPosts 실행
 
+  // 모달을 열 때 호출되는 함수
   const openModal = (post) => {
-    setSelectedPost(post); // 선택된 포스트 저장
+    setSelectedPost(post); // 선택된 게시물 저장
   };
 
+  // 모달을 닫을 때 호출되는 함수
   const closeModal = () => {
-    setSelectedPost(null); // 모달 닫기
+    setSelectedPost(null); // 선택된 게시물 초기화 (모달 닫기)
   };
 
   return (

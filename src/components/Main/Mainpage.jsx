@@ -5,10 +5,7 @@ import { DataDispatchContext, DataStateContext } from "../../contexts";
 import Mainlive from "./Mainlive.jsx";
 import ModalCont from "../Modal/ModalCont.jsx";
 import UploadModal from "../ModalConts/UploadModal.jsx";
-
 import defaultProfile from "/img/defaultProfile.jpg";
-
-// react-icon
 import { IoCloseOutline } from "react-icons/io5";
 import { FaEarthAmericas } from "react-icons/fa6";
 
@@ -187,25 +184,27 @@ const ContImg = styled.img`
   }
 `;
 
+// Mainpage 컴포넌트 정의
 const Mainpage = ({ searchTerm }) => {
-  const [isContOpen, setIsContOpen] = useState(false);
-  const [postedCont, setPostedCont] = useState(null);
+  const [isContOpen, setIsContOpen] = useState(false); // 게시글 클릭 시 상세 모달 열림 여부
+  const [postedCont, setPostedCont] = useState(null); // 모달에 표시할 게시글 정보
 
-  const [profileImg, setProfileImg] = useState(defaultProfile);
+  const [profileImg, setProfileImg] = useState(defaultProfile); // 기본 프로필 이미지
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
-  const [isEditing, setIsEditing] = useState(false); // 편집 모드 여부
-  const [imageSrc, setImageSrc] = useState(""); // 편집할 이미지 소스
-  const [contentDesc, setContentDesc] = useState(""); // 편집할 내용
-  const [posts, setPosts] = useState([]);
+  const [isEditing, setIsEditing] = useState(false); // 수정 모드 여부
+  const [imageSrc, setImageSrc] = useState(""); // 이미지 소스 (수정용)
+  const [contentDesc, setContentDesc] = useState(""); // 게시글 내용 (수정용)
+  const [posts, setPosts] = useState([]); // 화면에 표시할 게시글 리스트
 
-  const [editingPostId, setEditingPostId] = useState(null);
-  const { onDeletePost } = useContext(DataDispatchContext);
-  const data = useContext(DataStateContext);
-  const { currentUserData } = data;
+  const [editingPostId, setEditingPostId] = useState(null); // 수정 중인 게시글 ID
+  const { onDeletePost } = useContext(DataDispatchContext); // 게시글 삭제 함수
+  const data = useContext(DataStateContext); // 전역 상태
+  const { currentUserData } = data; // 현재 로그인한 사용자 정보
 
-  const postData = data.posts || [];
-  const lastPostRef = useRef(null);
+  const postData = data.posts || []; // 전체 게시글
+  const lastPostRef = useRef(null); // 마지막 게시글에 스크롤 맞추기 위한 ref
 
+  // 게시글 최신순 정렬
   useEffect(() => {
     const sortedPosts = [...postData].sort((a, b) => {
       const dateA = new Date(a.createdAt);
@@ -215,20 +214,24 @@ const Mainpage = ({ searchTerm }) => {
     setPosts(sortedPosts);
   }, [postData]);
 
+  // 검색어 공백 제거 및 소문자로 변환해 포함 여부 판단
   const normalizeString = (str) => str.replace(/\s+/g, "").toLowerCase();
 
+  // 검색 필터링 적용된 게시글
   const filteredPosts = posts.filter(
     (post) =>
       normalizeString(post.content).includes(normalizeString(searchTerm)) ||
       normalizeString(post.userName).includes(normalizeString(searchTerm))
   );
 
+  // 검색 결과가 하나일 경우 해당 게시글로 스크롤
   useEffect(() => {
     if (filteredPosts.length === 1 && lastPostRef.current) {
       lastPostRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   }, [filteredPosts]);
 
+  // 날짜 포맷 변환 (yyyy.mm.dd)
   const formatDate = (isoString) => {
     const date = new Date(isoString);
     const year = date.getFullYear();
@@ -237,6 +240,7 @@ const Mainpage = ({ searchTerm }) => {
     return `${year}.${month}.${day}`;
   };
 
+  // 게시글 삭제
   const postDeleteBtn = async (e, postId) => {
     e.preventDefault();
     const isConfirmed = confirm("게시물을 삭제하시겠습니까?");
@@ -249,6 +253,7 @@ const Mainpage = ({ searchTerm }) => {
     }
   };
 
+  // 모달 닫기 및 편집 상태 초기화
   const closeModal = () => {
     setIsModalOpen(false);
     setIsEditing(false);
@@ -257,11 +262,13 @@ const Mainpage = ({ searchTerm }) => {
     setContentDesc("");
   };
 
+  // 게시글 이미지 클릭 시 상세 모달 열기
   const handleImageClick = (post) => {
     setPostedCont(post); // 클릭한 게시물의 정보를 저장
     setIsContOpen(true); // 모달 열기
   };
 
+  // 상세 모달 닫기
   const handleModalContClose = () => {
     setPostedCont(null);
     setIsContOpen(false);
@@ -270,6 +277,7 @@ const Mainpage = ({ searchTerm }) => {
   const isSearching = searchTerm.trim().length > 0;
   return (
     <>
+      {/* 검색 결과가 있을 경우 게시글 렌더링 */}
       {filteredPosts.length > 0 ? (
         filteredPosts.map((item, i) => {
           const isAuthor = currentUserData?.userId === item.userId;
@@ -330,7 +338,7 @@ const Mainpage = ({ searchTerm }) => {
       ) : (
         <p>검색된 게시물이 없습니다.</p>
       )}
-
+      {/* 업로드/수정 모달 */}
       {isModalOpen && (
         <UploadModal
           closeModal={closeModal}
@@ -341,7 +349,7 @@ const Mainpage = ({ searchTerm }) => {
           currentUserData={currentUserData}
         />
       )}
-
+      {/* 게시글 상세 모달 */}
       {isContOpen && (
         <ModalCont post={postedCont} closeModal={handleModalContClose} />
       )}

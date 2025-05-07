@@ -1,12 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
 import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../../firebase";
-
+import { auth } from "../../firebase"; // Firebase 인증 초기화 모듈
 import styled from "styled-components";
 import { FormDesc } from "./login-components";
-
 import googleIcon from "/img/google-icon.svg";
 import appleIcon from "/img/apple-icon.svg";
 import githubIcon from "/img/github-icon.svg";
@@ -42,15 +39,16 @@ const Wrapper = styled.div`
 `;
 
 const SNSLogin = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // 페이지 이동을 위한 hook
 
+  // GitHub 로그인 버튼 클릭 시 실행되는 함수
   const onClick = async () => {
     try {
-      const providerGithub = new GithubAuthProvider();
-      await signInWithPopup(auth, providerGithub);
-      navigate("/");
+      const providerGithub = new GithubAuthProvider(); // GitHub 인증 제공자 생성
+      await signInWithPopup(auth, providerGithub); // 팝업을 통해 GitHub 로그인
+      navigate("/"); // 로그인 후 홈 페이지로 이동
     } catch (e) {
-      console.log(e);
+      console.log(e); // 오류 발생 시 콘솔에 출력
     }
   };
 

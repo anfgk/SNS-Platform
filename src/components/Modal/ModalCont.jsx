@@ -258,43 +258,55 @@ const Mobile = styled.div`
 `;
 
 const ModalCont = ({ post, closeModal }) => {
-  const { currentUserData } = useContext(DataStateContext);
-  const [showComments, setShowComments] = useState(false);
+  const { currentUserData } = useContext(DataStateContext); // 유저 정보 가져오기
+  const [showComments, setShowComments] = useState(false); // 댓글 토글 상태
 
+  // 모달 닫기 버튼 클릭 시 실행되는 함수
   const closeButton = () => {
-    closeModal();
+    closeModal(); // 부모 컴포넌트에서 전달받은 closeModal 함수 실행
   };
 
+  // 댓글창 열기/닫기를 토글하는 함수
   const handleCommentToggle = () => {
     setShowComments((prev) => !prev);
+    // 현재 상태(showComments)를 반전시킴
     console.log("showComments 상태:", showComments);
   };
 
+  // 날짜 포맷 함수
+  // 예: "2025-05-08T12:34:56Z" -> "2025.05.08"
   const formatDate = (isoString) => {
-    const date = new Date(isoString);
+    const date = new Date(isoString); // 문자열을 Date 객체로 변환
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}.${month}.${day}`;
   };
 
+  // 댓글을 생성하고 Firebase에 저장하는 함수
   const handleCreateComment = async (postId, content) => {
+    // 빈 문자열 또는 공백만 있는 경우 무시
     if (!content.trim()) return;
 
+    // 유저 이름이 있다면 이름+성 조합, 없으면 "Anonymous"로 설정
     const formattedUserName = currentUserData?.userName
       ? `${currentUserData.userName.firstName}${currentUserData.userName.lastName}`
       : "Anonymous";
 
+    // 댓글 객체 생성
     const newComment = {
-      content,
-      formattedUserName,
-      userId: currentUserData?.userId || "guest",
-      createdAt: new Date().toISOString(),
+      content, // 댓글 내용
+      formattedUserName, // 작성자 이름
+      userId: currentUserData?.userId || "guest", // 작성자 ID가 없으면 "guest"
+      createdAt: new Date().toISOString(), // 생성 시점 (ISO 형식)
     };
 
     try {
+      // Firebase Firestore에 댓글 추가
+      // 컬렉션 경로는 posts/{postId}/comments
       await addDoc(collection(db, `posts/${postId}/comments`), newComment);
     } catch (error) {
+      // 오류 발생 시 콘솔에 출력
       console.error("댓글 생성 중 오류 발생:", error);
     }
   };

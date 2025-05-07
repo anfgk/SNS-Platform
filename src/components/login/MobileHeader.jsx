@@ -10,11 +10,6 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  /* position: fixed;
-  top: 0;
-  left: 0;
-  padding: 0 15px; */
-  /* background: var(--color-white); */
   border-bottom: 1px solid var(--color-light-gray-01);
 `;
 const GoBackBtn = styled.button`
@@ -51,7 +46,7 @@ const MobileHeader = () => {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M15.75 19.5 8.25 12l7.5-7.5"
+              d="M15.75 19.5 8.25 12l7.5-7.5" // 화살표 경로 설정
             />
           </svg>
         </GoBackBtn>

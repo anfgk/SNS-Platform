@@ -196,6 +196,8 @@ const NextBtn = styled.span`
     display: none;
   }
 `;
+
+// 오른쪽 슬라이더 화살표 스타일 및 컴포넌트
 const NextArrow = ({ onClick }) => {
   return (
     <NextBtn onClick={onClick}>
@@ -234,6 +236,8 @@ const PrevBtn = styled.span`
     display: none;
   }
 `;
+
+// 왼쪽 슬라이더 화살표 스타일 및 컴포넌트
 const PrevArrow = ({ onClick }) => {
   return (
     <PrevBtn onClick={onClick}>
@@ -242,15 +246,20 @@ const PrevArrow = ({ onClick }) => {
   );
 };
 
+// 메인 추천 그룹 컴포넌트
 const MainGroup = () => {
+  // 사용자 데이터와 mock 데이터 context에서 불러오기
   const { currentUserData, mockData } = useContext(DataStateContext);
   const [recommendedGroups, setRecommendedGroups] = useState([]);
+
+  // 사용자 데이터가 있으면 그룹 데이터 fetch 실행
   useEffect(() => {
     if (currentUserData) {
       fetchGroups();
     }
   }, [currentUserData]);
 
+  // Firestore에서 그룹 데이터 가져와서 필터링
   const fetchGroups = async () => {
     try {
       const groupsSnapshot = await getDocs(collection(db, "category"));
@@ -281,6 +290,8 @@ const MainGroup = () => {
       console.error("그룹 데이터를 불러오지 못했습니다.", error);
     }
   };
+
+  // 슬라이더 설정값 정의
   const settings = {
     dots: false,
     infinite: true,
@@ -321,6 +332,7 @@ const MainGroup = () => {
         </Title>
         <Items>
           <Slider className="slider" {...settings}>
+            {/* 추천 그룹이 있으면 표시하고, 없으면 mockData 표시 */}
             {recommendedGroups.length > 0
               ? recommendedGroups.map((group, i) => (
                   <Item key={i}>

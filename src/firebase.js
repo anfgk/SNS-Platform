@@ -1,9 +1,13 @@
 import "firebase/compat/storage";
 
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getStorage } from "firebase/storage";
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDIrRWIuOWl9Sx7en8ZagOK6HUOw9DJNaQ",
@@ -17,8 +21,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-export const storage = getStorage(app);
+// 인증 상태 지속성 설정
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("인증 지속성 설정 오류:", error);
+});
 
-export const db = getFirestore(app);
+export { app, auth, db, storage };

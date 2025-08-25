@@ -1,97 +1,124 @@
-# 🎯 Facebook 클론 프로젝트
+## 프로젝트 소개
 
-## 🌈 프로젝트 소개
+Facebook의 핵심 소셜 기능(게시글, 댓글, 좋아요, 친구, 프로필)을 가볍고 빠른 사용자 경험으로 제공하는 React 기반 SPA입니다. Firebase 실시간 데이터 동기화로 작성/수정/삭제와 인터랙션이 즉시 반영되며, React Context와 커스텀 훅으로 상태/비즈니스 로직을 모듈화했습니다. Vite를 활용해 빠른 개발 환경과 경량 번들을 구성했고, 데이터 주도 설계로 기능 확장성이 높습니다.
 
-React와 Firebase를 활용하여 게시글 작성, 실시간 댓글, 좋아요 등 SNS의 핵심 기능을 구현한 페이스북 클론 프로젝트입니다.
+- **프로젝트 유형**: 팀 프로젝트
+- **팀 구성**: 6명
 
-## 💻 사용 기술
+## 주요 목표
 
-- **Languages**: JavaScript, HTML5, CSS3
-- **Frontend**: React 18, Styled-components
-- **Backend**: Firebase v9
-- **Tools**: Git, ESLint, Prettier
-- **Deploy**: Firebase Hosting
+- 피드(게시글/댓글/좋아요) 흐름과 실시간 동기화 구현
+- 인증(이메일/비밀번호, 소셜)과 보호 라우팅 설계
+- 프로필/마이페이지 UI 구성과 이미지 업로드 경험 개선
+- 반응형 UI와 다크/라이트 테마 제공
 
-## 🏡 개발 팀원
+## 역할 및 기여 (팀 프로젝트)
+- 메인페이지 UI/UX 총괄: 피드/스토리/라이브 섹션 레이아웃 설계, 반응형 구성, 로딩/스켈레톤 처리, 접근성 개선(포커스/대비)
+- 스토리 기능 구현: 스토리 업로드/조회, 슬라이드 전환/자동재생, 터치 제스처(모바일) 대응, 이미지 최적화 및 실시간 반영
+- 성능 안정화: 이미지 지연 로딩(`OptimizedImage.jsx`), 불필요 리렌더 최소화(메모이제이션), Firebase 구독 정리 및 의존성 관리
 
-김정하 외 5명
 
-## 🕰️ 개발 기간
+## 기술 스택
 
-2024.09.09 ~ 2024.10.18
+- **런타임/언어**: JavaScript (ES6+)
+- **프레임워크**: React 18
+- **번들러**: Vite
+- **라우팅/상태**: React Router, React Context
+- **스타일**: Styled-components, CSS, 웹폰트(`src/font/NotoSansKR-VariableFont_wght.ttf`)
+- **백엔드(BaaS)**: Firebase v9 (Auth, Cloud Firestore, Storage, Hosting)
+- **품질/도구**: ESLint, Prettier, Git(GitHub)
+- **배포**: Firebase Hosting
 
-## 🌎 Tech
-<<<<<<< HEAD
-React, Vite, Style-components, React Router, React Context, Git
+## 기능 요약
 
-## 🖥️ Other Skill
-Netlify, Figma, Slack, Firebase(Authentication, Cloud Firestore, Storage, Hosting), Github
+- **인증**: 이메일/비밀번호 회원가입·로그인, 구글/카카오 소셜 로그인, 로그인 유지/로그아웃(`components/common/kakao.jsx`, `hooks/useAuth.js`)
+- **피드**: 텍스트/이미지 게시글 작성·수정·삭제, 좋아요, 댓글 CRUD, 무한 스크롤(`components/common/PostUpload.jsx`, `components/common/Comment.jsx`)
+- **프로필/마이페이지**: 프로필 카드, 커버 이미지, 게시물/미디어 리스트(`components/Mypage/*`)
+- **UI/UX**: 다크/라이트 테마 토글, 반응형, 로딩/에러 피드백, 실시간 동기화(`contexts/DarkThemeContext.jsx`, `components/common/LoadingScreen.jsx`)
+- **최적화**: 이미지 지연 로딩/최적화 컴포넌트(`components/common/OptimizedImage.jsx`), 캐싱(`utils/cacheUtils.js`)
 
-## 📚 주요기능
-1. 사용자 인증 기능
- - 이메일과 비밀번호를 통한 회원가입/로그인
- - 구글 계정을 이용한 소셜 로그인
- - 로그인 상태 유지 기능
- - 로그아웃 기능
+## 페이지 구조
 
-2. 게시물 관련 기능
- - 텍스트와 이미지를 포함한 게시물 작성
- - 게시물 수정 및 삭제
- - 게시물에 좋아요 기능
- - 게시물에 댓글 작성/수정/삭제
- - 무한 스크롤을 통한 게시물 로딩
-   
-3. 프로필 관리 기능
- - 사용자 프로필 정보 수정
- - 프로필 이미지 업로드/변경
- - 친구 추가 및 삭제
- - 사용자 활동 내역 확인
- - 친구 목록 관리
-   
-4. UI/UX 기능
- - 라이트/다크 모드 테마 전환
- - 모바일/태블릿/데스크톱 반응형 디자인
- - 로딩 상태 표시 (스켈레톤 UI)
- - 에러 처리 및 사용자 피드백
- - 실시간 데이터 업데이트
-   
-5. 성능 최적화 기능
- - 이미지 지연 로딩
- - 컴포넌트 메모이제이션
- - 로컬 스토리지를 활용한 데이터 캐싱
- - Firebase 실시간 동기화
- - 이러한 기능들이 React와 Firebase를 기반으로 구현되어 있으며, 실제 페이스북과 유사한 사용자 경험을 제공합니다. 추가로 궁금하신 기능이 있으시다면 말씀해 주세요!
+- **Main** (`src/pages/Main.jsx`): 메인 피드, 스토리/라이브 섹션
+- **Login** (`src/pages/Login.jsx`): 이메일/소셜 로그인, 추가 정보 입력
+- **Signup** (`src/pages/Signup.jsx`): 회원가입 플로우/카테고리 선택
+- **Mypage** (`src/pages/Mypage.jsx`): 프로필/게시물/미디어 탭
+- **NotFound** (`src/pages/NotFound.jsx`): 404 핸들링
 
-## ✨ Rule
- - 모든 컴포넌트는 함수형으로 작성
- - 비즈니스 로직은 커스텀 훅으로 분리
- - 변수와 함수명은 카멜케이스(camelCase) 사용
- - 컴포넌트명은 파스칼케이스(PascalCase) 사용
- - 주석은 기능 설명과 함께 필수로 작성
- - 불필요한 리렌더링 방지
-=======
+## 폴더 구조(요약)
 
-React, Vite, Style-components, Git
+```text
+src/
+  components/
+    common/
+      Comment.jsx           # 댓글 CRUD
+      PostUpload.jsx        # 게시글 작성/수정
+      OptimizedImage.jsx    # 이미지 최적화/지연 로딩
+      ProtectedRoute.jsx    # 인증 보호 라우팅
+      kakao.jsx             # 카카오 로그인/SDK 연계
+    login/                  # 로그인/회원가입 UI
+    Main/                   # 메인 피드/스토리/라이브
+    Mypage/                 # 마이페이지 카드/리스트/커버
+  contexts/
+    DarkThemeContext.jsx    # 테마 상태 관리
+    DataStateContext.jsx    # 전역 데이터 상태
+    DataDispatchContext.jsx # 전역 데이터 디스패치
+  hooks/
+    useAuth.js              # Firebase Auth 연동
+    useFirebaseData.js      # 실시간 데이터 구독/가공
+    useImageLoader.js       # 이미지 로딩 상태 관리
+  pages/
+    Main.jsx, Login.jsx, Mypage.jsx, Signup.jsx, NotFound.jsx
+  services/
+    firebaseService.js      # Firestore/Storage CRUD 래퍼
+  utils/
+    cacheUtils.js, errorUtils.js, firebaseUtils.js, util.js
+  styles/
+    GlobalStyles.styles.js, theme.js
+```
 
-## 🖥️ Other Skill
+## 실행 방법
 
-Netlify, Figma, Slack, Notion, Firebase
+```bash
+npm install
+npm run dev
+```
 
-## 📚 주요기능
+## 빌드/배포
 
-- 이메일, 전화번호 또는 소셜 미디어 계정을 통해 회원가입 및 로그인 기능 제공.
-- 사용자는 자신의 프로필을 관리하고 사진, 자기소개, 친구 목록 등을 수정할 수 있음.
-- 텍스트, 이미지, 동영상 등 다양한 형식의 게시물을 작성하고 타임라인에 공유할 수 있음.
-- 게시물에 좋아요를 누르거나 댓글을 달고, 다른 사람과 게시물을 공유할 수 있음.
-- 표시되는 사진이나 동영상을 게시하여 친구들과 공유하는 스토리 기능.
-- 실시간 방송을 통해 팔로워와 소통하는 기능.
+- 개발: `npm run dev` (Vite 개발 서버)
+- 빌드: `npm run build` → `dist/` 산출물 Firebase Hosting 배포
 
-## ✨ Rule
+## 데이터/로직 개요
 
-- 주석필수
-- 컴포넌트 구조화: 각 기능을 작은 컴포넌트로 나누어 관리.
-- 상태 관리: useState와 useEffect를 사용해 페이지 상태 관리.
-- Firebase 연결: 게시물 데이터를 실시간으로 Firebase에 저장하고 동기화.
-- 반응형 디자인: 모바일 친화적인 레이아웃 적용.
-- Git 관리: Git으로 협업, 커밋 메시지 규칙 준수.
->>>>>>> 142251e (업데이트)
+- **인증**: Firebase Auth(이메일/소셜) + `useAuth` 훅으로 세션/가드 처리
+- **데이터**: Firestore 컬렉션(`users`, `posts`, `comments`, `likes`)과 Storage(이미지)
+- **비즈니스 로직**: `services/firebaseService.js`, `utils/firebaseUtils.js`로 접근 로직 캡슐화
+- **상태/구독**: `useFirebaseData`로 실시간 리스너 관리, 의존성/cleanup으로 중복 방지
+
+## 스크린샷/에셋
+
+- 공통/페이지 이미지는 `public/img/` 경로 사용
+  - 예: `public/img/background.jpg`, `public/img/opengraph.jpg`, `public/img/test.jpg`
+
+## 접근성/UX 고려
+
+- 키보드 포커스 가능한 인터랙션 요소, 명확한 포커스 스타일
+- 이미지 대체 텍스트 제공(`OptimizedImage.jsx`에서 프롭스로 전달)
+- 모바일 퍼스트 레이아웃, 라이트/다크 대비 기준 준수
+
+## 개선 아이디어(향후 계획)
+
+- React Query로 서버 상태 표준화/캐싱 고도화
+- 이미지 포맷 최적화(WebP/AVIF) 및 적응형 로딩
+- 스토리/라이브 실시간 경험 강화(WebSocket/RTDB 검토)
+- 유닛 테스트 도입(피드/댓글 로직 검증), E2E(핵심 플로우)
+- Storybook으로 컴포넌트 카탈로그/시각 테스트
+
+## 회고
+
+- 라우팅/상태/데이터-주도 UI를 일관된 패턴으로 연결해 유지보수성을 높였습니다.
+- 실시간 동기화와 이미지 업로드 등 실제 사용자 시나리오를 Firebase로 간결하게 해결했습니다.
+- 비즈니스 로직을 훅/서비스로 분리해 확장성과 재사용성을 확보했으며, 테마/반응형으로 다양한 환경에서 일관된 경험을 제공했습니다.
+
+

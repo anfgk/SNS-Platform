@@ -26,7 +26,7 @@ npm run dev
 
 ## 기술 스택
 
-- **프론트** `React18` `vite` `React Router`, `Context API` `styled-components`
+- **프론트** `React` `vite` `React Router`, `Context API` `styled-components`
 - **백엔드(BaaS)**: Firebase v9 (Auth, Cloud Firestore, Storage, Hosting)
 - **품질/도구**: ESLint, Prettier, Git(GitHub)
 - **배포**: Firebase Hosting

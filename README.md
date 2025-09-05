@@ -29,7 +29,7 @@ npm run dev
 - **프론트** `React` `vite` `React Router`, `Context API` `styled-components`
 - **백엔드(BaaS)**: Firebase v9 (Auth, Cloud Firestore, Storage, Hosting)
 - **품질/도구**: ESLint, Prettier, Git(GitHub)
-- **배포**: Firebase Hosting
+- **배포**: Netlify
 
 ## 기능 요약
 
